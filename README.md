@@ -1,2 +1,7 @@
 # sci-tech-website
-repo for sci tech club iari
+
+
+Creaters of this website
+<br><br>
+u/Chetu-07
+
