@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyHub - School Notes Management</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --secondary: #06b6d4;
+      --dark: #1e293b;
+      --light: #f8fafc;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+    
+    body {
+      background-color: #f1f5f9;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    
+    header {
+      background-color: white;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+    
+    .logo svg {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-outline {
+      background-color: transparent;
+      color: var(--dark);
+      border: 1px solid #e2e8f0;
+    }
+    
+    .btn-outline:hover {
+      background-color: #f8fafc;
+    }
+    
+    main {
+      padding: 2rem 0;
+    }
+    
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+    }
+    
+    .hero-content {
+      max-width: 600px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+    
+    .subtitle {
+      font-size: 1.25rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
+    
+    .search-bar {
+      margin-bottom: 2rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+    
+    .search-bar input:focus {
+      outline: 2px solid var(--primary);
+      border-color: transparent;
+    }
+    
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .course-card {
+      background-color: white;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .course-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .course-image {
+      height: 160px;
+      background-color: #ddd;
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .course-content {
+      padding: 1.5rem;
+    }
+    
+    .course-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .course-subjects {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .subject-tag {
+      padding: 0.25rem 0.75rem;
+      background-color: #f1f5f9;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+    
+    .notes-container {
+      display: none;
+      background-color: white;
+      border-radius: 0.5rem;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .notes-tabs {
+      display: flex;
+      border-bottom: 1px solid #e2e8f0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .tab {
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    
+    .tab.active {
+      border-bottom: 2px solid var(--primary);
+      color: var(--primary);
+      font-weight: 500;
+    }
+    
+    .notes-list {
+      display: grid;
+      gap: 1rem;
+    }
+    
+    .note-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.375rem;
+      transition: background-color 0.2s;
+    }
+    
+    .note-item:hover {
+      background-color: #f8fafc;
+    }
+    
+    .note-icon {
+      width: 40px;
+      height: 40px;
+      background-color: #f1f5f9;
+      border-radius: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+    }
+    
+    .note-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--primary);
+    }
+    
+    .note-content {
+      flex: 1;
+    }
+    
+    .note-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+    
+    .note-meta {
+      font-size: 0.875rem;
+      color: #64748b;
+    }
+    
+    .note-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      color: #64748b;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    
+    .action-btn:hover {
+      background-color: #f1f5f9;
+      color: var(--primary);
+    }
+    
+    .uploader {
+      padding: 2rem;
+      border: 2px dashed #e2e8f0;
+      border-radius: 0.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    
+    .uploader p {
+      margin: 1rem 0;
+      color: #64748b;
+    }
+    
+    footer {
+      background-color: white;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      border-top: 1px solid #e2e8f0;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    
+    .footer-links a {
+      color: #64748b;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    .copyright {
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+    
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .courses-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          <span>StudyHub</span>
+        </div>
+        <div class="nav-links">
+          <a href="#">Home</a>
+          <a href="#">Courses</a>
+          <a href="#">My Notes</a>
+          <a href="#">Resources</a>
+        </div>
+        <div class="user-menu">
+          <button class="btn btn-outline">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+          <button class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            Add Notes
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Organize Your Agricultural Studies</h1>
+        <p class="subtitle">Store, access, and share your notes by course and subject. Never lose track of important information again.</p>
+        <button class="btn btn-primary">
+          Get Started
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+      <div class="hero-image">
+        <img src="/api/placeholder/400/320" alt="Agricultural students studying" />
+      </div>
+    </section>
+    
+    <div class="search-bar">
+      <input type="text" placeholder="Search courses, subjects, or notes...">
+      <button class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+    
+    <h2>My Courses</h2>
+    <div class="courses-grid">
+      <div class="course-card" onclick="toggleNotes()">
+        <div class="course-image" style="background-color: #10b981;"></div>
+        <div class="course-content">
+          <div class="course-title">Agriculture</div>
+          <p>Crop production, soil science, and sustainable farming practices</p>
+          <div class="course-subjects">
+            <span class="subject-tag">Crop Science</span>
+            <span class="subject-tag">Soil Management</span>
+            <span class="subject-tag">Sustainable Farming</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="course-card">
+        <div class="course-image" style="background-color: #4f46e5;"></div>
+        <div class="course-content">
+          <div class="course-title">Agricultural Engineering</div>
+          <p>Farm machinery, irrigation systems, and agricultural structures</p>
+          <div class="course-subjects">
+            <span class="subject-tag">Farm Machinery</span>
+            <span class="subject-tag">Irrigation Systems</span>
+            <span class="subject-tag">Land Development</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="course-card">
+        <div class="course-image" style="background-color: #06b6d4;"></div>
+        <div class="course-content">
+          <div class="course-title">Biotechnology</div>
+          <p>Genetic engineering, microbiology, and molecular breeding techniques</p>
+          <div class="course-subjects">
+            <span class="subject-tag">Genetic Engineering</span>
+            <span class="subject-tag">Microbiology</span>
+            <span class="subject-tag">Plant Breeding</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="course-card">
+        <div class="course-image" style="background-color: #f59e0b;"></div>
+        <div class="course-content">
+          <div class="course-title">Community Sciences</div>
+          <p>Rural development, agricultural economics, and extension education</p>
+          <div class="course-subjects">
+            <span class="subject-tag">Rural Development</span>
+            <span class="subject-tag">Agricultural Economics</span>
+            <span class="subject-tag">Extension Education</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="notes-container" id="notes-container">
+      <div class="notes-header">
+        <h2>Agriculture Notes</h2>
+        <button class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Add Note
+        </button>
+      </div>
+      
+      <div class="notes-tabs">
+        <div class="tab active">Crop Science</div>
+        <div class="tab">Soil Management</div>
+        <div class="tab">Sustainable Farming</div>
+        <div class="tab">All Notes</div>
+      </div>
+      
+      <div class="notes-list">
+        <div class="note-item">
+          <div class="note-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div class="note-content">
+            <div class="note-title">Crop Rotation Principles</div>
+            <div class="note-meta">Last updated: Mar 5, 2025 • 12 pages</div>
+          </div>
+          <div class="note-actions">
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="note-item">
+          <div class="note-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div class="note-content">
+            <div class="note-title">Cereal Crop Management</div>
+            <div class="note-meta">Last updated: Feb 28, 2025 • 15 pages</div>
+          </div>
+          <div class="note-actions">
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="note-item">
+          <div class="note-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <div class="note-content">
+            <div class="note-title">Integrated Pest Management</div>
+            <div class="note-meta">Last updated: Feb 15, 2025 • 18 pages</div>
+          </div>
+          <div class="note-actions">
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              </svg>
+            </button>
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+            <button class="action-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="uploader">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#4f46e5" width="48" height="48" style="margin: 0 auto; display: block;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <h3>Upload your notes</h3>
+        <p>Drag and drop files here or click to browse</p>
+        <button class="btn btn-outline">Select Files</button>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-links">
+          <a href="#">Help Center</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="copyright">
+          © 2025 StudyHub. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <script>
+    function toggleNotes() {
+      const notesContainer = document.getElementById('notes-container');
+      if (notesContainer.style.display === 'block') {
+        notesContainer.style.display = 'none';
+      } else {
+        notesContainer.style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
